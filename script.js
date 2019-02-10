@@ -61,7 +61,8 @@ function start(){
     document.addEventListener("keydown",function(e){
         if(e.key == 'w'){
             ready = true;
-            Matter.Body.applyForce(player, {x: player.position.x, y: player.position.y + 40}, {x: 0, y: -.1});
+            Matter.Body.setVelocity(player,{x:0,y:0})
+            Matter.Body.applyForce(player, {x: player.position.x, y: player.position.y}, {x: 0, y: -.05});
         }
     })
     // create collision detection and restart game on every collision
@@ -79,7 +80,9 @@ function start(){
             ready = false;
         }
         if(ready == false){
+            Matter.Body.setAngularVelocity(player, 0)
             Matter.Body.setPosition(player,{x:200,y:300})
+            Matter.Body.setVelocity(player,{x:0,y:0})
         }
     })
 };

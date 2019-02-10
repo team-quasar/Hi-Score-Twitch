@@ -36,17 +36,13 @@ function start(){
     var upperBound = Bodies.rectangle(0, -80, 10000, 200, {
         isStatic: true,
         render:{
-            fillStyle: 'red',
-            strokeStyle: 'black',
-            lineWidth: 3
+            visibility: false
         }
     })
     var lowerBound = Bodies.rectangle(0, 680, 10000, 200, {
         isStatic: true,
         render:{
-            fillStyle: 'red',
-            strokeStyle: 'black',
-            lineWidth: 3
+            visibility: false
         }
     })
     // create runner
@@ -54,21 +50,36 @@ function start(){
     Runner.run(runner, engine);
     var player = Bodies.polygon(200, 300, 3, 40, {
     render: {
-         fillStyle: 'transparent',
-         strokeStyle: 'black',
-         lineWidth: 3,
-
+        visibility: false
     }})
     player.frictionAir = 0;
     Body.rotate(player, Math.PI)
     Body.applyForce(player, {x: player.position.x, y: player.position.y}, {x: 0, y: 0})
     World.add(engine.world, [player, upperBound, lowerBound])
-
- // add all of the bodies to the world
-
+    // add all of the bodies to the world
+    var ready = false;
     document.addEventListener("keydown",function(e){
-  if(e.key == 'w'){
-    Matter.Body.applyForce(player, {x: player.position.x, y: player.position.y + 40}, {x: 0, y: -.1});
-  }
-})
+        if(e.key == 'w'){
+            ready = true;
+            Matter.Body.applyForce(player, {x: player.position.x, y: player.position.y + 40}, {x: 0, y: -.1});
+        }
+    })
+    // create collision detection and restart game on every collision
+    Matter.Events.on(engine, 'beforeTick', function() {
+        var collisionUp = Matter.SAT.collides(player, upperBound)
+        if (collisionUp.collided) {
+            Matter.Body.setPosition(player,{x:200,y:300})
+            Matter.Body.setVelocity(player,{x:0,y:0})
+            ready = false;
+        }
+        var collisionDown = Matter.SAT.collides(player, lowerBound)
+        if (collisionDown.collided) {
+            Matter.Body.setPosition(player,{x:200,y:300})
+            Matter.Body.setVelocity(player,{x:0,y:0})
+            ready = false;
+        }
+        if(ready == false){
+            Matter.Body.setPosition(player,{x:200,y:300})
+        }
+    })
 };
